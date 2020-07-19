@@ -1,0 +1,6 @@
+{
+    "alchemy.rinkeby.http": "https://alchemy.mainnet",
+    "alchemy.rinkeby.ws": "wss://alchemy.mainnet",
+    "infura.rinkeby.http": "https://rinkeby.mainnet",
+    "infura.rinkeby.ws": "wss://rinkeby.mainnet"
+}
