@@ -41,7 +41,8 @@ let contract = await manager.getContract('HelloContract');
 
 ### Configuration
 
-```json
+Providers configuration:
+```json5
 {
     "defaultProvider": "1.mainnet", // chainId.network
     "providers": {
@@ -80,10 +81,11 @@ let contract = await manager.getContract('HelloContract');
 }
 ```
 
-```json
+Deployments configuration:
+```json5
 {
-    "1": {
-        "mainnet": {
+    "1": { // chainId
+        "mainnet": { // network
             "contracts": {
                 "HelloContract": {
                     "address": "0x11",
@@ -92,8 +94,8 @@ let contract = await manager.getContract('HelloContract');
             }
         }
     },
-    "4": {
-        "rinkeby": {
+    "4": { // chainId
+        "rinkeby": { // network
             "contracts": {
                 "HelloContract": {
                     "address": "0x22",
@@ -101,7 +103,7 @@ let contract = await manager.getContract('HelloContract');
                 }
             }
         },
-        "rinkeby_qa": {
+        "rinkeby_qa": { // network
             "contracts": {
                 "HelloContract": {
                     "address": "0x33",
@@ -120,9 +122,8 @@ let contract = await manager.getContract('HelloContract');
 ### Features
 
 -   Load configuration files. Contracts configurations are compatible with the `--export-all` option of `buidler-deploy`.
--   Create a Web3 instance for a named environment.
--   Create a Web3 Contract instance for a named environment and a contract deployment name.
--   Create a Web3 Contract based on an externally-managed Web3 instance, for a named environment and a contract deployment name. For example when using an injected wallet. Compatible with Metamask and other wallets.
+-   Create cached Web3 instance.
+-   Create a Contract instance from internally managed Web3 instance or an externally-managed Web3 instance.
 -   Disconnect provider connections.
 
 ### Interfaces
@@ -136,16 +137,6 @@ let contract = await manager.getContract('HelloContract');
 -   `Web3Environment` - the Web3 implementation of `Environment`.
 -   `Web3EnvironmentsManager` - the Web3 implementation of `EnvironmentsManager`.
 -   `Web3EnvironmentsManagerLoader` - the Web3 implementation of `EnvironmentsManagerLoader`.
-
-### APIs
-
-```typescript
-Web3Environments.getContract(contract, environment): Promise<Contract>
-Web3Environments.getWeb3(environment): Promise<Web3>
-Web3Environments.getWeb3Contract(contract, environment, web3): Promise<Contract>
-
-Web3EnvironmentsLoader.loadEnvironmentsManager(): Promise(EnvironmentsManager);
-```
 
 ### Caveat
 
