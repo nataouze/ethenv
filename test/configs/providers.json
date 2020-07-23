@@ -1,0 +1,29 @@
+{
+    "defaultProvider": "1.mainnet",
+    "providers": {
+        "1": {
+            "mainnet": {
+                "url": "https://provider1.myapp_mainnet.com",
+                "options": {
+                    "defaultGasPrice": "1000000000"
+                },
+                "contracts": {
+                    "MyInventory": {
+                        "url": "wss://provider2.myapp_mainnet.com",
+                        "options": {
+                            "defaultGasPrice": "2000000000"
+                        }
+                    }
+                }
+            }
+        },
+        "4": {
+            "rinkeby": {
+                "url": "https://provider1.myapp_rinkeby.com"
+            },
+            "rinkeby_qa": {
+                "url": "https://provider2.myapp_rinkeby.com"
+            }
+        }
+    }
+}

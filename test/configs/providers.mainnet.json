@@ -1,6 +1,0 @@
-{
-    "alchemy.mainnet.http": "https://alchemy.mainnet",
-    "alchemy.mainnet.ws": "wss://alchemy.mainnet",
-    "infura.mainnet.http": "https://infura.mainnet",
-    "infura.mainnet.ws": "wss://infura.mainnet"
-}

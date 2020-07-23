@@ -1,4 +1,4 @@
-# Ethereum enrionments manager
+# Ethereum environments manager
 
 ## Introduction
 
@@ -11,13 +11,110 @@ Cross-connectivity environment for javascript Ethereum clients. Can be used in b
 ### Installation
 
 ```bash
-yarn add eth-environments-manager
+yarn add ethenv
 ```
 
 or
 
 ```bash
-npm install eth-environments-manager
+npm install ethenv
+```
+
+### Usage
+
+```typescript
+import {
+    Web3Environment,
+    Web3EnvironmentsManager,
+    Web3EnvironmentsManagerLoader,
+} from 'ethenv';
+
+let loader = new Web3EnvironmentsManagerLoader();
+let manager = await loader.load(); // loads the default configs (localhost)
+let web3 = await manager.getWeb3();
+// let environment = await manager.getEnvironment();
+// let web3FromEnvironment = await environment.getWeb3();
+
+let contract = await manager.getContract('HelloContract');
+// let contractFromEnvironment = await environment.getContract('HelloContract');
+```
+
+### Configuration
+
+```json
+{
+    "defaultProvider": "1.mainnet", // chainId.network
+    "providers": {
+        "1": {
+            // chainId
+            "mainnet": {
+                // network
+                "url": "https://provider1.myapp_mainnet.com",
+                "options": {
+                    "transactionBlockTimeout": "50"
+                },
+                "contracts": {
+                    "HelloContract": {
+                        // provider attributes override by contract name
+                        "url": "wss://provider2.myapp_mainnet.com",
+                        "options": {
+                            // Warning: "transactionBlockTimeout" will not be kept from the parent
+                            "transactionConfirmationBlocks": "3"
+                        }
+                    }
+                }
+            }
+        },
+        "4": {
+            // chainId
+            "rinkeby": {
+                // network
+                "url": "https://provider1.myapp_rinkeby.com"
+            },
+            "rinkeby_qa": {
+                // network
+                "url": "https://provider2.myapp_rinkeby.com"
+            }
+        }
+    }
+}
+```
+
+```json
+{
+    "1": {
+        "mainnet": {
+            "contracts": {
+                "HelloContract": {
+                    "address": "0x11",
+                    "abi": []
+                }
+            }
+        }
+    },
+    "4": {
+        "rinkeby": {
+            "contracts": {
+                "HelloContract": {
+                    "address": "0x22",
+                    "abi": []
+                }
+            }
+        },
+        "rinkeby_qa": {
+            "contracts": {
+                "HelloContract": {
+                    "address": "0x33",
+                    "abi": []
+                },
+                "TestContract": {
+                    "address": "0x44",
+                    "abi": []
+                }
+            }
+        }
+    }
+}
 ```
 
 ### Features
@@ -30,15 +127,17 @@ npm install eth-environments-manager
 
 ### Interfaces
 
--   `EnvironmentsManager` - the Ethereum environments manager interface
--   `EnvironmentsManagerLoader` - the loader that assembles configurations and instantiates ``EnvironmentsManager`.
+-   `Environment` - an environment managing a pool of connections for a given network
+-   `EnvironmentsManager` - an environments manager
+-   `EnvironmentsManagerLoader` - a loader to instantiate an environments manager.
 
 ### Classes
 
--   `Web3Environments` - the Web3 implementation of `EnvironmentsManager`.
--   `Web3EnvironmentsLoader` - the Web3 implementation of `EnvironmentsManagerLoader`.
+-   `Web3Environment` - the Web3 implementation of `Environment`.
+-   `Web3EnvironmentsManager` - the Web3 implementation of `EnvironmentsManager`.
+-   `Web3EnvironmentsManagerLoader` - the Web3 implementation of `EnvironmentsManagerLoader`.
 
-### Apis
+### APIs
 
 ```typescript
 Web3Environments.getContract(contract, environment): Promise<Contract>
@@ -46,86 +145,6 @@ Web3Environments.getWeb3(environment): Promise<Web3>
 Web3Environments.getWeb3Contract(contract, environment, web3): Promise<Contract>
 
 Web3EnvironmentsLoader.loadEnvironmentsManager(): Promise(EnvironmentsManager);
-```
-
-### Configs
-
-Both `EnvironmentsManager` and `EnvironmentsManagerLoader` takes config in the constructor.
-
--   Sample providers config file
-
-```json
-{
-    "alchemy.rinkeby.http": "https://alchemy.mainnet",
-    "alchemy.rinkeby.ws": "wss://alchemy.mainnet",
-    "infura.rinkeby.http": "https://rinkeby.mainnet",
-    "infura.rinkeby.ws": "wss://rinkeby.mainnet"
-}
-```
-
--   Sample environments config file
-
-```json
-{
-    "mainnet.dev.http": {
-        "chainId": "1",
-        "network": "mainnet",
-        "provider": "infura.mainnet.http",
-        "options": {}
-    },
-    "mainnet.dev.ws": {
-        "chainId": "1",
-        "network": "mainnet",
-        "provider": "infura.mainnet.ws",
-        "options": {}
-    },
-    "rinkeby.dev.http": {
-        "chainId": "4",
-        "network": "rinkeby",
-        "provider": "infura.rinkeby.http",
-        "options": {}
-    },
-    "rinkeby.dev.ws": {
-        "chainId": "4",
-        "network": "rinkeby",
-        "provider": "infura.rinkeby.ws",
-        "options": {}
-    }
-}
-```
-
--   Sample contracts config file.
-
-```json
-{
-    "4": {
-        "rinkeby": {
-            "contracts": {
-                "Contract1": {
-                    "address": "0x1111111111111111111111111111111111111111",
-                    "abi": []
-                },
-                "Contract2": {
-                    "address": "0x2222222222222222222222222222222222222222",
-                    "abi": []
-                }
-            }
-        }
-    }
-}
-```
-
-### Usage
-
-- Example
-
-```typescript
-import { Web3EnvironmentsLoader } from 'ethenv';
-const loader = new Web3EnvironmentsLoader(config);
-const web3Environments = await loader.loadEnvironmentsManager();
-console.log(web3Environments.config);
-const contract = await web3Environments.getContract('Bytes', 'localhost.http');
-console.log(contract.address);
 ```
 
 ### Caveat
