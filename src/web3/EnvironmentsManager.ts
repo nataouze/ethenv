@@ -1,20 +1,20 @@
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 import {
-    Environment,
+    // Environment,
     EnvironmentsManager,
     ProviderConfig,
     ProvidersConfiguration,
     MultiNetworksDeployments,
     NetworkDeployments,
-    NamedDeployments,
+    // NamedDeployments,
 } from '../types';
 import Web3Environment from './Environment';
 import { Web3ModuleOptions } from 'web3-core';
 
 export default class Web3EnvironmentsManager implements EnvironmentsManager {
     public readonly defaultProvider: string;
-    private managedEnvironments: { [provider: string]: Environment } = {};
+    private managedEnvironments: { [provider: string]: Web3Environment } = {};
 
     /**
      * Constructor.
@@ -32,7 +32,7 @@ export default class Web3EnvironmentsManager implements EnvironmentsManager {
      * Lazy loaded managed Environment instance.
      * @param provider optional provider in format: chainId.network. If not defined, the default provider will be used.
      */
-    async getEnvironment(provider?: string): Promise<Environment> {
+    async getEnvironment(provider?: string): Promise<Web3Environment> {
         if (provider === undefined) {
             provider = this.defaultProvider;
         }
@@ -40,8 +40,7 @@ export default class Web3EnvironmentsManager implements EnvironmentsManager {
         if (this.managedEnvironments[provider] === undefined) {
             const [chainId, network] = provider.split('.');
             const providerConf: ProviderConfig = this.providers.providers[chainId][network];
-            const contracts: NamedDeployments = this.deployments[chainId][network];
-            const deploymentsConf: NetworkDeployments = { chainId, network, contracts };
+            const deploymentsConf: NetworkDeployments = this.deployments[chainId][network];
             this.managedEnvironments[provider] = new Web3Environment(providerConf, deploymentsConf);
         }
         return this.managedEnvironments[provider];

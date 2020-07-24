@@ -38,7 +38,7 @@ export interface NetworkDeployments {
 }
 
 export interface MultiNetworksDeployments {
-    [chaindId: string]: { [network: string]: NamedDeployments };
+    [chaindId: string]: { [network: string]: NetworkDeployments };
 }
 
 export interface Environment {

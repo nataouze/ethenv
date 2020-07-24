@@ -3,7 +3,7 @@ import 'cross-fetch/polyfill';
 import {
     NetworkDeployments,
     MultiNetworksDeployments,
-    EnvironmentsManager,
+    // EnvironmentsManager,
     EnvironmentsManagerLoader,
     ProvidersConfiguration,
     DeploymentsConfig,
@@ -19,7 +19,7 @@ export default class Web3EnvironmentsManagerLoader implements EnvironmentsManage
         providers: { '1337': { localhost: { url: 'http://localhost:7545' } } },
     };
     private readonly _deploymentsDefaultConfig: MultiNetworksDeployments = {
-        '1337': { localhost: {} },
+        '1337': { localhost: { chainId: '1337', network: 'localhost', contracts: {} } },
     };
     public providers: ProvidersConfiguration;
     public deployments: MultiNetworksDeployments;
@@ -29,7 +29,7 @@ export default class Web3EnvironmentsManagerLoader implements EnvironmentsManage
      * @param providers optional providers configuration(s). If the value is an array, the configurations will be merged in order from left to right. If not defined, a default value will be used.
      * @param deployments the deployments configuration(s). If the value is an array, the configurations will be merged in order from left to right. If not defined, a default value will be used.
      */
-    async load(providers?: ProvidersConfig, deployments?: DeploymentsConfig): Promise<EnvironmentsManager> {
+    async load(providers?: ProvidersConfig, deployments?: DeploymentsConfig): Promise<Web3EnvironmentsManager> {
         [this.providers, this.deployments] = await Promise.all([
             this._buildProvidersConfig(providers),
             this._buildNetworkDeploymentsConfig(deployments),
@@ -68,7 +68,11 @@ export default class Web3EnvironmentsManagerLoader implements EnvironmentsManage
     private _convertToMultiNetworksDeployments(networkDeployments: NetworkDeployments): MultiNetworksDeployments {
         const converted: MultiNetworksDeployments = {};
         converted[networkDeployments.chainId] = {};
-        converted[networkDeployments.chainId][networkDeployments.network] = networkDeployments.contracts;
+        converted[networkDeployments.chainId][networkDeployments.network] = {
+            chainId: networkDeployments.chainId,
+            network: networkDeployments.network,
+            contracts: networkDeployments.contracts,
+        };
         return converted;
     }
 
