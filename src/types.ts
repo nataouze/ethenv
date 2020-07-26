@@ -26,8 +26,8 @@ export interface ConnectivityEnvironment {
     readonly deploymentContextConfig: DeploymentContextConfig;
     readonly providerConfig: ProviderConfig;
 
-    providersCache: { [url: string]: any };
-    wrappedProvidersCache: { [key: string]: any };
+    cachedProviders: { [url: string]: any };
+    cachedWrappedProviders: { [key: string]: any };
 
     /**
      * Retrieve a cached provider.
