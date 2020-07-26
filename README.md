@@ -2,6 +2,13 @@
 
 ## Introduction
 
+Manage providers and contracts through configuration and/or code for browser or node.
+
+```javascript
+const { Web3Manager } = require('ethenv');
+const manager = await Web3Manager.get();
+const contract = await manager.getContract('DeltaTimeInventory');
+```
 Cross-connectivity environment for javascript Ethereum clients. Can be used in browser and node.
 
 ### Requirements
@@ -42,80 +49,87 @@ let contract = await manager.getContract('HelloContract');
 ### Configuration
 
 Providers configuration:
-```json5
+
+```typescript
 {
-    "defaultProvider": "1.mainnet", // chainId.network
-    "providers": {
-        "1": {
+    defaultProvider: '1.mainnet', // chainId.network
+    providers: {
+        '1': {
             // chainId
-            "mainnet": {
+            mainnet: {
                 // network
-                "url": "https://provider1.myapp_mainnet.com",
-                "options": {
-                    "transactionBlockTimeout": "50"
+                url: 'https://provider1.myapp_mainnet.com',
+                options: {
+                    transactionBlockTimeout: '50',
                 },
-                "contracts": {
-                    "HelloContract": {
+                contracts: {
+                    HelloContract: {
                         // provider attributes override by contract name
-                        "url": "wss://provider2.myapp_mainnet.com",
-                        "options": {
+                        url: 'wss://provider2.myapp_mainnet.com',
+                        options: {
                             // Warning: "transactionBlockTimeout" will not be kept from the parent
-                            "transactionConfirmationBlocks": "3"
-                        }
-                    }
-                }
-            }
-        },
-        "4": {
-            // chainId
-            "rinkeby": {
-                // network
-                "url": "https://provider1.myapp_rinkeby.com"
+                            transactionConfirmationBlocks: '3',
+                        },
+                    },
+                },
             },
-            "rinkeby_qa": {
+        },
+        '4': {
+            // chainId
+            rinkeby: {
                 // network
-                "url": "https://provider2.myapp_rinkeby.com"
-            }
-        }
-    }
+                url: 'https://provider1.myapp_rinkeby.com',
+            },
+            rinkeby_qa: {
+                // network
+                url: 'https://provider2.myapp_rinkeby.com',
+            },
+        },
+    },
 }
 ```
 
 Deployments configuration:
-```json5
+
+```typescript
 {
-    "1": { // chainId
-        "mainnet": { // network
-            "contracts": {
-                "HelloContract": {
-                    "address": "0x11",
-                    "abi": []
-                }
-            }
-        }
-    },
-    "4": { // chainId
-        "rinkeby": { // network
-            "contracts": {
-                "HelloContract": {
-                    "address": "0x22",
-                    "abi": []
-                }
-            }
-        },
-        "rinkeby_qa": { // network
-            "contracts": {
-                "HelloContract": {
-                    "address": "0x33",
-                    "abi": []
+    '1': {
+        // chainId
+        mainnet: {
+            // network
+            contracts: {
+                HelloContract: {
+                    address: '0x11',
+                    abi: [],
                 },
-                "TestContract": {
-                    "address": "0x44",
-                    "abi": []
-                }
-            }
-        }
-    }
+            },
+        },
+    },
+    '4': {
+        // chainId
+        rinkeby: {
+            // network
+            contracts: {
+                HelloContract: {
+                    address: '0x22',
+                    abi: [],
+                },
+            },
+        },
+        rinkeby_qa: {
+            // network
+            contracts: {
+                HelloContract: {
+                    address: '0x33',
+                    abi: [],
+                },
+                TestContract: {
+                    address: '0x44',
+                    abi: [],
+                },
+            },
+        },
+    },
 }
 ```
 

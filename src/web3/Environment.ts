@@ -1,90 +1,165 @@
 import Web3 from 'web3';
-import { Contract } from 'web3-eth-contract';
-import { HttpProvider, WebsocketProvider, AbstractSocketProvider } from 'web3-providers';
-import { Environment, ProviderConfig, NetworkDeployments } from '../types';
 import { Web3ModuleOptions } from 'web3-core';
+import { Contract } from 'web3-eth-contract';
+import { ProvidersModuleFactory, HttpProvider, WebsocketProvider } from 'web3-providers';
+import { Mutex } from 'async-mutex';
+import { ConnectivityEnvironment, DeploymentContextConfig, ProviderConfig } from '../types';
+import Web3Loader from './Loader';
 
-export default class Web3Environment implements Environment {
-    private cachedWeb3s: { [cacheKey: string]: Web3 } = {};
+export type Provider = HttpProvider | WebsocketProvider;
+
+/**
+ * Web3 implementation of ConnectivityEnvironment.
+ */
+export default class Web3Environment implements ConnectivityEnvironment {
+    public providersCache: { [url: string]: Provider } = {};
+    public wrappedProvidersCache: { [key: string]: Web3 } = {};
+
+    private _providersCacheMutex = new Mutex();
+    private _wrappedProvidersCacheMutex = new Mutex();
+    private _providersFactory = new ProvidersModuleFactory();
 
     /**
      * Constructor.
-     * @param provider the provider configuration.
-     * @param deployments the deployments configuration.
+     * @param providerConfig the provider configuration.
+     * @param deploymentContextConfig the deployment context configuration.
      */
-    constructor(public readonly provider: ProviderConfig, public readonly deployments: NetworkDeployments) {}
-
-    /**
-     * Lazy loading Web3 instance.
-     * @param options: optional argument for Web3 constructor. If defined, will override configuration values.
-     */
-    async getWeb3(options?: Web3ModuleOptions): Promise<Web3> {
-        if (options === undefined) {
-            options = this.provider.options || {};
-        }
-        const cacheKey = `${this.provider.url}.${JSON.stringify(options)}`;
-        if (this.cachedWeb3s[cacheKey] === undefined) {
-            this.cachedWeb3s[cacheKey] = new Web3(this.provider.url, null, options);
-            console.log(`new connection established: '${cacheKey}'`);
-        }
-        return this.cachedWeb3s[cacheKey];
+    constructor(
+        public readonly providerConfig: ProviderConfig,
+        public readonly deploymentContextConfig: DeploymentContextConfig
+    ) {
+        console.debug(
+            `Web3Environment for '${this.providerConfig.name}' created.`,
+            `Supported contracts: ${Object.keys(this.deploymentContextConfig.contracts).join(', ')}`
+        );
     }
 
     /**
-     * Returns a Contract instance.
+     * Load the configurations and create a new connectivity environment.
+     *
+     * There are two types of configurations: Provider and DeploymentContext. For each of them:
+     * - Configurations can be loaded from a configuration object or a string URL pointing to a JSON configuration object.
+     * - Configurations are loaded and merged sequentially (attributes can be overriden).
+     * - Loading order:
+     *   1. The default configuration for '1337.localhost',
+     *   2. The URL retrieved from the associated environment variable, if set:
+     *     - {PROVIDER_URL} for Provider,
+     *     - {DEPLOYMENT_CONTEXT_URL} for DeploymentContext,
+     *   3. The configuration from the configuration argument, if provided.
+     *
+     * @param providerConfig provider configuration to load.
+     * @param deploymentContextConfig deployment context configuration to load.
+     * @return promise for the created connectivity environment.
+     */
+    static async get(
+        providerConfig?: ProviderConfig | string,
+        deploymentContextConfig?: DeploymentContextConfig | string
+    ): Promise<Web3Environment> {
+        const loader = new Web3Loader();
+        return loader.loadEnvironment(providerConfig, deploymentContextConfig);
+    }
+
+    /**
+     * Retrieve a cached provider.
+     * @param contractName contract deployment name. If provided, the default provider configuration may be overidden by the contract configuration.
+     * @return promise for the retrieved provider.
+     */
+    async getProvider(contractName?: string): Promise<Provider> {
+        const contractOverride = this.providerConfig.contracts
+            ? this.providerConfig.contracts[contractName]
+            : undefined;
+        const url = contractOverride ? contractOverride.url : this.providerConfig.url;
+        return this._getCachedProvider(url);
+    }
+
+    /**
+     * Retrieve a cached Web3 instance.
+     * @param options argument for the Web3 constructor. If provided, will override the configuration value.
+     * @return promise for the retrieved Web3 instance.
+     */
+    async getWrappedProvider(options?: Web3ModuleOptions): Promise<Web3> {
+        options = options || this.providerConfig.options || {};
+        return this._getCachedWrappedProvider(this.providerConfig.url, options);
+    }
+
+    /**
+     * Retrieve a cached Web3 instance.
+     * @param options argument for the Web3 constructor. If provided, will override the configuration value.
+     * @return promise for the retrieved Web3 instance.
+     */
+    async getWeb3(options?: Web3ModuleOptions): Promise<Web3> {
+        return this.getWrappedProvider(options);
+    }
+
+    /**
+     * Create a contract from a cached or provided Web3 instance.
      * @param contractName the name of the deployment to retrieve.
-     * @param options: optional argument for Web3 constructor. If defined, will override configuration values.
-     * @param web3 optional Web3 instance to use for the contract creation. Will not be cached. If not defined, an instance will be created and cached.
+     * @param options argument for the Web3 constructor. If provided, will override configuration values. Will be ignored if web3 is provided.
+     * @param web3 Web3 instance to use for the contract creation. If not provided, a cached instance will be used.
+     * @return promise for the created contract instance.
      */
     async getContract(contractName: string, options?: Web3ModuleOptions, web3?: Web3): Promise<Contract> {
-        console.log(this.deployments);
-        const contract = this.deployments.contracts[contractName];
-
-        if (web3 === undefined) {
-            if (options === undefined) {
-                options = this.provider.options || {};
-            }
-            let url = this.provider.url;
-
-            if (this.provider.contracts !== undefined && this.provider.contracts[contractName] !== undefined) {
-                const contractOverrides = this.provider.contracts[contractName];
-                if (contractOverrides.url !== undefined) {
-                    url = contractOverrides.url;
-                }
-                if (contractOverrides.options) {
-                    options = contractOverrides.options;
-                }
-            }
-
-            const cacheKey = `${url}.${JSON.stringify(options)}`;
-            if (this.cachedWeb3s[cacheKey] === undefined) {
-                this.cachedWeb3s[cacheKey] = new Web3(url, null, options);
-                console.log(`new connection established: '${cacheKey}'`);
-            }
-            web3 = this.cachedWeb3s[cacheKey];
+        if (!web3) {
+            const contractOverride = this.providerConfig.contracts
+                ? this.providerConfig.contracts[contractName]
+                : undefined;
+            const url = contractOverride ? contractOverride.url : this.providerConfig.url;
+            options = options || (contractOverride ? contractOverride.options : this.providerConfig.options) || {};
+            web3 = await this._getCachedWrappedProvider(url, options);
         }
 
+        const contract = this.deploymentContextConfig.contracts[contractName];
         return new web3.eth.Contract(contract.abi, contract.address);
     }
 
     /**
-     * For each cached Web3 instance, attempts to disconnect the provider and to delete the cache entry.
+     * Attempts to disconnect each cached provider, then clears the providers and wrapped providers caches.
+     * @return promise after disconnection.
      */
     async shutdown(): Promise<void> {
-        for (const [cacheKey, web3] of Object.entries(this.cachedWeb3s)) {
+        await this._providersCacheMutex.acquire();
+        await this._wrappedProvidersCacheMutex.acquire();
+        console.debug(`Disconnecting environment ${this.providerConfig.name} ...`);
+        for (const [url, provider] of Object.entries(this.providersCache)) {
             try {
-                console.log(`Disconnecting '${cacheKey}'`);
-                if (web3.currentProvider instanceof HttpProvider) {
-                    (web3.currentProvider as HttpProvider).disconnect();
-                } else if (web3.currentProvider instanceof WebsocketProvider) {
-                    (web3.currentProvider as WebsocketProvider).disconnect(null, null);
+                console.debug(`Disconnecting provider for ${url} ...`);
+                if (provider instanceof HttpProvider) {
+                    provider.disconnect();
+                } else if (provider instanceof WebsocketProvider) {
+                    provider.disconnect(null, null);
                 } else {
-                    (web3.currentProvider as AbstractSocketProvider).disconnect(null, null);
+                    console.warn(`Unknown provider type for ${url}`);
                 }
-                delete this.cachedWeb3s[cacheKey];
             } catch (e) {
-                console.warn(`Error while trying to disconnect '${cacheKey}':`, e);
+                console.error(`Error while disconnecting ${url}:`, e);
             }
         }
+        this.providersCache = {};
+        this.wrappedProvidersCache = {};
+        await this._providersCacheMutex.release();
+        await this._wrappedProvidersCacheMutex.release();
+        console.debug(`Environment ${this.providerConfig.name} disconnected`);
+    }
+
+    private async _getCachedProvider(url: string): Promise<Provider> {
+        await this._providersCacheMutex.acquire();
+        if (this.providersCache[url] === undefined) {
+            this.providersCache[url] = this._providersFactory.createProviderResolver().resolve(url, null) as Provider;
+            console.debug(`New provider cached with key '${url}'`);
+        }
+        await this._providersCacheMutex.release();
+        return this.providersCache[url];
+    }
+
+    private async _getCachedWrappedProvider(url: string, options: Web3ModuleOptions): Promise<Web3> {
+        const key = `${url}.${JSON.stringify(options)}`;
+        await this._wrappedProvidersCacheMutex.acquire();
+        if (this.wrappedProvidersCache[key] === undefined) {
+            const provider = await this._getCachedProvider(url);
+            this.wrappedProvidersCache[key] = new Web3(provider, null, options);
+            console.debug(`New Web3 cached with key '${key}'`);
+        }
+        await this._wrappedProvidersCacheMutex.release();
+        return this.wrappedProvidersCache[key];
     }
 }

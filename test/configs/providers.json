@@ -3,6 +3,7 @@
     "providers": {
         "1": {
             "mainnet": {
+                "name": "1.mainnet",
                 "url": "https://provider1.myapp_mainnet.com",
                 "options": {
                     "defaultGasPrice": "1000000000"
@@ -19,9 +20,11 @@
         },
         "4": {
             "rinkeby": {
+                "name": "4.rinkeby",
                 "url": "https://provider1.myapp_rinkeby.com"
             },
             "rinkeby_qa": {
+                "name": "4.rinkeby_qa",
                 "url": "https://provider2.myapp_rinkeby.com"
             }
         }

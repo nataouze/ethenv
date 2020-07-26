@@ -1,7 +1,8 @@
 node_modules/
-.history/
 logs/
-.idea
 dist/
 lib/
 build/
+docs/
+
+.DS_Store

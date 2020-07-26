@@ -1,12 +1,12 @@
 {
-  "overrides": [
-    {
-      "files": "*.ts",
-      "options": {
-        "printWidth": 120,
-        "useTabs": false,
-        "tabWidth": 4
-      }
-    }
-  ]
+    "overrides": [
+        {
+            "files": "*.ts",
+            "options": {
+                "printWidth": 120,
+                "useTabs": false,
+                "tabWidth": 4
+            }
+        }
+    ]
 }
