@@ -1,4 +1,5 @@
 import { Web3Manager } from '..';
+import { Web3ModuleOptions } from 'web3-core';
 
 const myAddress = '0xabcabc';
 
@@ -8,33 +9,41 @@ const myAddress = '0xabcabc';
         // then the configurations fetched from PROVIDERS_URLS and DEPLOYMENT_CONTEXTS_URLS environment variables, if any
         const manager = await Web3Manager.get();
 
-        const smallLagOptions = {
-            transactionConfirmationBlocks: 2
+        const mainnetWeb3 = await manager.getWeb3('1.mainnet');
+        const mainnetSmallLag: Web3ModuleOptions = {
+            defaultBlock: Number(mainnetWeb3.defaultBlock) - 2
         }
-        const bigLagOptions = {
-            transactionConfirmationBlocks: 6
+        const mainnetBigLag: Web3ModuleOptions = {
+            defaultBlock: Number(mainnetWeb3.defaultBlock) - 10
         }
 
-        // Each managed environment will be created by one promise and reused by the others accessing the same environment.
+        const rinkebyWeb3 = await manager.getWeb3('4.rinkeby');
+        const rinkebySmallLag: Web3ModuleOptions = {
+            defaultBlock: Number(rinkebyWeb3.defaultBlock) - 2
+        }
+        const rinkebyBigLag: Web3ModuleOptions = {
+            defaultBlock: Number(rinkebyWeb3.defaultBlock) - 10
+        }
+
         const multiNetworkBalances = await Promise.all([
-            manager.getWeb3(/* will use the default provider, for example '1.mainnet' */).then((web3) => web3.eth.getBalance(myAddress)),
-            manager.getWeb3(null /* default provider */, smallLagOptions).then((web3) => web3.eth.getBalance(myAddress)),
-            manager.getWeb3(null /* default provider */, bigLagOptions).then((web3) => web3.eth.getBalance(myAddress)),
+            manager.getWeb3(/* will use the default provider, or use env variable DEFAULT_PROVIDER, for example '1.mainnet' */).then((web3) => web3.eth.getBalance(myAddress)),
+            manager.getWeb3(null /* default provider */, mainnetSmallLag).then((web3) => web3.eth.getBalance(myAddress)),
+            manager.getWeb3(null /* default provider */, mainnetBigLag).then((web3) => web3.eth.getBalance(myAddress)),
             manager.getWeb3('1.mainnet').then((web3) => web3.eth.getBalance(myAddress)),
-            manager.getWeb3('1.mainnet', smallLagOptions).then((web3) => web3.eth.getBalance(myAddress)),
-            manager.getWeb3('1.mainnet', bigLagOptions).then((web3) => web3.eth.getBalance(myAddress)),
+            manager.getWeb3('1.mainnet', mainnetSmallLag).then((web3) => web3.eth.getBalance(myAddress)),
+            manager.getWeb3('1.mainnet', mainnetBigLag).then((web3) => web3.eth.getBalance(myAddress)),
             manager.getWeb3('4.rinkeby').then((web3) => web3.eth.getBalance(myAddress)),
-            manager.getWeb3('4.rinkeby', smallLagOptions).then((web3) => web3.eth.getBalance(myAddress)),
-            manager.getWeb3('4.rinkeby', bigLagOptions).then((web3) => web3.eth.getBalance(myAddress)),
+            manager.getWeb3('4.rinkeby', rinkebySmallLag).then((web3) => web3.eth.getBalance(myAddress)),
+            manager.getWeb3('4.rinkeby', rinkebyBigLag).then((web3) => web3.eth.getBalance(myAddress)),
             manager.getContract('DAI' /* default provider */).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
-            manager.getContract('DAI', null /* default provider */, smallLagOptions).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
-            manager.getContract('DAI', null /* default provider */, bigLagOptions).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
+            manager.getContract('DAI', null /* default provider */, mainnetSmallLag).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
+            manager.getContract('DAI', null /* default provider */, mainnetBigLag).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
             manager.getContract('DAI', '1.mainnet').then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
-            manager.getContract('DAI', '1.mainnet', smallLagOptions).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
-            manager.getContract('DAI', '1.mainnet', bigLagOptions).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
+            manager.getContract('DAI', '1.mainnet', mainnetSmallLag).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
+            manager.getContract('DAI', '1.mainnet', mainnetBigLag).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
             manager.getContract('DAI', '4.rinkeby').then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
-            manager.getContract('DAI', '4.rinkeby', smallLagOptions).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
-            manager.getContract('DAI', '4.rinkeby', bigLagOptions).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
+            manager.getContract('DAI', '4.rinkeby', rinkebySmallLag).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
+            manager.getContract('DAI', '4.rinkeby', rinkebyBigLag).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
         ]);
         console.log('balances', multiNetworkBalances);
         // await manager.shutdown(); // optional disconnection of all the environment

@@ -25,19 +25,19 @@ const myAddress = '0xabcabc';
         // Creates the default provider and wraps a Web3 instance with the default options
         const web3 = await environment.getWeb3();
         // Reuses the default provider and wraps a new Web3 instance with the supplied options
-        const smallLagWeb3 = await environment.getWeb3({
-            transactionConfirmationBlocks: 1
+        const beforeTestWeb3 = await environment.getWeb3({
+            defaultBlock: 255
         });
         // Reuses the default provider and wraps a new Web3 instance with the supplied options
-        const bigLagWeb3 = await environment.getWeb3({
-            transactionConfirmationBlocks: 6
+        const afterTestWeb3 = await environment.getWeb3({
+            defaultBlock: 298
         });
-        const [stronglyConfirmedBalance, looselyConfirmedBalance, unconfirmedBalance] = await Promise.all([
-            bigLagWeb3.eth.getBalance(myAddress),
-            smallLagWeb3.eth.getBalance(myAddress),
+        const [balanceBeforeTest, balanceAfterTest, currentBalance] = await Promise.all([
+            beforeTestWeb3.eth.getBalance(myAddress),
+            afterTestWeb3.eth.getBalance(myAddress),
             web3.eth.getBalance(myAddress),
         ]);
-        console.log('balances', stronglyConfirmedBalance, looselyConfirmedBalance, unconfirmedBalance);
+        console.log('balances', balanceBeforeTest, balanceAfterTest, currentBalance);
         // await environment.shutdown(); // optional disconnection
     } catch (e) {
         console.error('Error while retrieving user balances:', e);
