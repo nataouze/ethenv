@@ -68,17 +68,6 @@ export default class Web3Manager implements ConnectivityManager {
     }
 
     /**
-     * Retrieve a cached provider.
-     * @param providerName provider name in format: 'chainId.contextName'. If not provided, the default provider name will be used.
-     * @param contractName contract deployment name. If provided, the default provider configuration may be overidden by the contract configuration.
-     * @return promise for the retrieved provider.
-     */
-    async getProvider(providerName?: string, contractName?: string): Promise<Provider> {
-        const environment = await this.getEnvironment(providerName);
-        return environment.getProvider(contractName);
-    }
-
-    /**
      * Retrieve a cached Web3 instance.
      * @param providerName provider name in format: 'chainId.contextName'. If not provided, the default provider name will be used.
      * @param options argument for the Web3 constructor. If provided, will override the configuration value.
@@ -110,11 +99,10 @@ export default class Web3Manager implements ConnectivityManager {
     async getContract(
         contractName: string,
         providerName?: string,
-        options?: Web3ModuleOptions,
         web3?: Web3
     ): Promise<Contract> {
         const environment = await this.getEnvironment(providerName);
-        return environment.getContract(contractName, options, web3);
+        return environment.getContract(contractName, web3);
     }
 
     /**

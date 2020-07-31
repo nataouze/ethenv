@@ -30,13 +30,6 @@ export interface ConnectivityEnvironment {
     cachedWrappedProviders: { [key: string]: any };
 
     /**
-     * Retrieve a cached provider.
-     * @param contractName contract deployment name. If provided, the default provider configuration may be overidden by the contract configuration.
-     * @return promise for the retrieved provider.
-     */
-    getProvider(contractName?: string): Promise<any>;
-
-    /**
      * Retrieve a cached wrapped provider instance.
      * @param options argument for the wrapped provider constructor. If provided, will override the configuration value.
      * @return promise for the retrieved wrapped provider instance.
@@ -50,7 +43,7 @@ export interface ConnectivityEnvironment {
      * @param wrappedProvider wrapped provider instance to use for the contract creation. If not provided, a cached instance will be used.
      * @return promise for the created contract instance.
      */
-    getContract(contractName: string, options?: any, wrappedProvider?: any): Promise<any>;
+    getContract(contractName: string, wrappedProvider?: any): Promise<any>;
 
     /**
      * Attempts to disconnect each cached provider, then clears the providers and wrapped providers caches.
@@ -73,14 +66,6 @@ export interface ConnectivityManager {
     getEnvironment(providerName?: string): Promise<any>;
 
     /**
-     * Retrieve a cached provider.
-     * @param providerName provider name in format: 'chainId.contextName'. If not provided, the default provider name will be used.
-     * @param contractName contract deployment name. If provided, the default provider configuration may be overidden by the contract configuration.
-     * @return promise for the retrieved provider.
-     */
-    getProvider(providerName?: string, contractName?: string): Promise<any>;
-
-    /**
      * Retrieve a cached wrapped provider instance.
      * @param providerName provider name in format: 'chainId.contextName'. If not provided, the default provider name will be used.
      * @param options argument for the wrapped provider constructor. If provided, will override the configuration value.
@@ -96,7 +81,7 @@ export interface ConnectivityManager {
      * @param wrappedProvider wrapped provider instance to use for the contract creation. If not defined, will retrieve an instance from a managed environment.
      * @return promise for the created contract instance.
      */
-    getContract(contractName: string, providerName?: string, options?: any, wrappedProvider?: any): Promise<any>;
+    getContract(contractName: string, providerName: string, wrappedProvider?: any): Promise<any>;
 
     /**
      * Shutdown all the cached environments.

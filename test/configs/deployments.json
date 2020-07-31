@@ -2,7 +2,7 @@
     "1": {
         "mainnet": {
             "chainId": "1",
-            "network": "mainnet",
+            "name": "mainnet",
             "contracts": {
                 "MyInventory": {
                     "address": "0x11",
@@ -36,7 +36,7 @@
     "4": {
         "rinkeby": {
             "chainId": "4",
-            "network": "rinkeby",
+            "name": "rinkeby",
             "contracts": {
                 "MyInventory": {
                     "address": "0x22",
@@ -68,7 +68,7 @@
         },
         "rinkeby_qa": {
             "chainId": "4",
-            "network": "rinkeby_qa",
+            "name": "rinkeby_qa",
             "contracts": {
                 "MyInventory": {
                     "address": "0x33",

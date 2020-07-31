@@ -36,17 +36,17 @@ const myAddress = '0xabcabc';
             manager.getWeb3('4.rinkeby', rinkebySmallLag).then((web3) => web3.eth.getBalance(myAddress)),
             manager.getWeb3('4.rinkeby', rinkebyBigLag).then((web3) => web3.eth.getBalance(myAddress)),
             manager.getContract('DAI' /* default provider */).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
-            manager.getContract('DAI', null /* default provider */, mainnetSmallLag).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
-            manager.getContract('DAI', null /* default provider */, mainnetBigLag).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
+            manager.getContract('DAI', null /* default provider */, await manager.getWeb3(null, mainnetSmallLag)).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
+            manager.getContract('DAI', null /* default provider */, await manager.getWeb3(null,mainnetBigLag)).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
             manager.getContract('DAI', '1.mainnet').then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
-            manager.getContract('DAI', '1.mainnet', mainnetSmallLag).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
-            manager.getContract('DAI', '1.mainnet', mainnetBigLag).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
+            manager.getContract('DAI', '1.mainnet', await manager.getWeb3('1.mainnet', mainnetSmallLag)).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
+            manager.getContract('DAI', '1.mainnet', await manager.getWeb3('1.mainnet', mainnetBigLag)).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
             manager.getContract('DAI', '4.rinkeby').then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
-            manager.getContract('DAI', '4.rinkeby', rinkebySmallLag).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
-            manager.getContract('DAI', '4.rinkeby', rinkebyBigLag).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
+            manager.getContract('DAI', '4.rinkeby', await manager.getWeb3('4.rinkeby', rinkebySmallLag)).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
+            manager.getContract('DAI', '4.rinkeby', await manager.getWeb3('4.rinkeby', rinkebyBigLag)).then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
         ]);
         console.log('balances', multiNetworkBalances);
-        // await manager.shutdown(); // optional disconnection of all the environment
+        // await manager.shutdown(); // optional disconnection of all the environments
     } catch (e) {
         console.error('Error while retrieving user balance:', e);
     }

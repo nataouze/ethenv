@@ -7,7 +7,7 @@ Manage providers and contracts through configuration and/or code for browser or 
 ```javascript
 const { Web3Manager } = require('ethenv');
 const manager = await Web3Manager.get();
-const contract = await manager.getContract('DeltaTimeInventory');
+const contract = await manager.getContract('MyContract');
 ```
 Cross-connectivity environment for javascript Ethereum clients. Can be used in browser and node.
 

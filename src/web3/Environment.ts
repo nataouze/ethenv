@@ -60,19 +60,6 @@ export default class Web3Environment implements ConnectivityEnvironment {
     }
 
     /**
-     * Retrieve a cached provider.
-     * @param contractName contract deployment name. If provided, the default provider configuration may be overidden by the contract configuration.
-     * @return promise for the retrieved provider.
-     */
-    async getProvider(contractName?: string): Promise<Provider> {
-        const contractOverride = this.providerConfig.contracts
-            ? this.providerConfig.contracts[contractName]
-            : undefined;
-        const url = contractOverride ? contractOverride.url : this.providerConfig.url;
-        return this._getCachedProvider(url);
-    }
-
-    /**
      * Retrieve a cached Web3 instance.
      * @param options argument for the Web3 constructor. If provided, will override the configuration value.
      * @return promise for the retrieved Web3 instance.
@@ -94,17 +81,16 @@ export default class Web3Environment implements ConnectivityEnvironment {
     /**
      * Create a contract from a cached or provided Web3 instance.
      * @param contractName the name of the deployment to retrieve.
-     * @param options argument for the Web3 constructor. If provided, will override configuration values. Will be ignored if web3 is provided.
      * @param web3 Web3 instance to use for the contract creation. If not provided, a cached instance will be used.
      * @return promise for the created contract instance.
      */
-    async getContract(contractName: string, options?: Web3ModuleOptions, web3?: Web3): Promise<Contract> {
+    async getContract(contractName: string, web3?: Web3): Promise<Contract> {
         if (!web3) {
             const contractOverride = this.providerConfig.contracts
                 ? this.providerConfig.contracts[contractName]
                 : undefined;
             const url = contractOverride ? contractOverride.url : this.providerConfig.url;
-            options = options || (contractOverride ? contractOverride.options : this.providerConfig.options) || {};
+            const options = (contractOverride ? contractOverride.options : this.providerConfig.options) || {};
             web3 = await this._getCachedWrappedProvider(url, options);
         }
 

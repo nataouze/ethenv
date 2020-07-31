@@ -59,7 +59,7 @@ const myAddress = '0xabcabc';
                 .getContract('Coin1')
                 .then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
             environment
-                .getContract('Coin2', userOptionsOverride)
+                .getContract('Coin2', await environment.getWeb3(userOptionsOverride))
                 .then((contract) => contract.methods['balanceOf(address)'](myAddress).call()),
         ]);
         console.log('ETH', ethBalance, 'Coin1', coin1Balance, 'Coin2', coin2Balance);
