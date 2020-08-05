@@ -53,8 +53,8 @@ export default class Web3Loader implements ConnectivityLoader {
      * - Loading order:
      *   1. The default configuration for '1337.localhost',
      *   2. The URL retrieved from the associated environment variable, if set:
-     *     - {PROVIDER_URL} for Provider,
-     *     - {DEPLOYMENT_CONTEXT_URL} for DeploymentContext,
+     *     - {PROVIDER_URL} or {REACT_APP_PROVIDER_URL} for Provider,
+     *     - {DEPLOYMENT_CONTEXT_URL} or {REACT_APP_DEPLOYMENT_CONTEXT_URL} for DeploymentContext,
      *   3. The configuration from the configuration argument, if provided.
      *
      * @param providerConfig provider configuration to load.
@@ -66,16 +66,16 @@ export default class Web3Loader implements ConnectivityLoader {
         deploymentContextConfig?: DeploymentContextConfig | string
     ): Promise<Web3Environment> {
         const providerToLoad: LoadableProvidersItem[] = [this._defaultProviderConfig];
-        if (process.env.PROVIDER_URL) {
-            providerToLoad.push(process.env.PROVIDER_URL);
+        if (process.env.PROVIDER_URL || process.env.REACT_APP_PROVIDER_URL) {
+            providerToLoad.push(process.env.PROVIDER_URL || process.env.REACT_APP_PROVIDER_URL);
         }
         if (providerConfig) {
             providerToLoad.push(providerConfig);
         }
 
         const deploymentContextToLoad: LoadableDeploymentContextsItem[] = [this._defaultDeploymentContextConfig];
-        if (process.env.DEPLOYMENT_CONTEXT_URL) {
-            deploymentContextToLoad.push(process.env.DEPLOYMENT_CONTEXT_URL);
+        if (process.env.DEPLOYMENT_CONTEXT_URL || process.env.REACT_APP_DEPLOYMENT_CONTEXT_URL) {
+            deploymentContextToLoad.push(process.env.DEPLOYMENT_CONTEXT_URL || process.env.REACT_APP_DEPLOYMENT_CONTEXT_URL);
         }
         if (deploymentContextConfig) {
             deploymentContextToLoad.push(deploymentContextConfig);
@@ -103,8 +103,8 @@ export default class Web3Loader implements ConnectivityLoader {
      * - Loading order:
      *   1. The default configuration for '1337.localhost',
      *   2. The URLs retrieved from the associated environment variable, if any:
-     *     - {PROVIDERS_URLS} for Providers,
-     *     - {DEPLOYMENT_CONTEXTS_URLS} for DeploymentContexts,
+     *     - {PROVIDERS_URLS} or {REACT_APP_PROVIDERS_URLS} for Providers,
+     *     - {DEPLOYMENT_CONTEXTS_URLS} or {REACT_APP_DEPLOYMENT_CONTEXTS_URLS} for DeploymentContexts,
      *   3. The configurations from the configuration argument, if provided.
      *
      * @param providersConfigs providers configuration to load.
@@ -116,8 +116,8 @@ export default class Web3Loader implements ConnectivityLoader {
         deploymentContextsConfigs?: DeploymentContextsConfigsArg
     ): Promise<Web3Manager> {
         const providersToLoad: LoadableProvidersItem[] = [this._defaultProvidersConfig];
-        if (process.env.PROVIDERS_URLS) {
-            providersToLoad.push(...process.env.PROVIDERS_URLS.split(' '));
+        if (process.env.PROVIDERS_URLS || process.env.REACT_APP_PROVIDERS_URLS) {
+            providersToLoad.push(...(process.env.PROVIDERS_URLS || process.env.REACT_APP_PROVIDERS_URLS).split(' '));
         }
         if (Array.isArray(providersConfigs)) {
             providersToLoad.push(...providersConfigs);
@@ -126,8 +126,8 @@ export default class Web3Loader implements ConnectivityLoader {
         }
 
         const deploymentContextsToLoad: LoadableDeploymentContextsItem[] = [this._defaultDeploymentContextsConfig];
-        if (process.env.DEPLOYMENT_CONTEXTS_URLS) {
-            deploymentContextsToLoad.push(...process.env.PROVIDERS_URLS.split(' '));
+        if (process.env.DEPLOYMENT_CONTEXTS_URLS || process.env.REACT_APP_DEPLOYMENT_CONTEXTS_URLS) {
+            deploymentContextsToLoad.push(...(process.env.DEPLOYMENT_CONTEXTS_URLS || process.env.REACT_APP_DEPLOYMENT_CONTEXTS_URLS).split(' '));
         }
         if (Array.isArray(deploymentContextsConfigs)) {
             deploymentContextsToLoad.push(...deploymentContextsConfigs);

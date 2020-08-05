@@ -107,8 +107,8 @@ export interface ConnectivityLoader {
      * - Loading order:
      *   1. The default configuration for '1337.localhost',
      *   2. The URL retrieved from the associated environment variable, if set:
-     *     - {PROVIDER_URL} for Provider,
-     *     - {DEPLOYMENT_CONTEXT_URL} for DeploymentContext,
+     *     - {PROVIDER_URL} or {REACT_APP_PROVIDER_URL} for Provider,
+     *     - {DEPLOYMENT_CONTEXT_URL} or {REACT_APP_DEPLOYMENT_CONTEXT_URL} for DeploymentContext,
      *   3. The configuration from the configuration argument, if provided.
      *
      * @param providerConfig provider configuration to load.
@@ -129,8 +129,8 @@ export interface ConnectivityLoader {
      * - Loading order:
      *   1. The default configuration for '1337.localhost',
      *   2. The URLs retrieved from the associated environment variable, if any:
-     *     - {PROVIDERS_URLS} for Providers,
-     *     - {DEPLOYMENT_CONTEXTS_URLS} for DeploymentContexts,
+     *     - {PROVIDERS_URLS} or {REACT_APP_PROVIDERS_URLS} for Providers,
+     *     - {DEPLOYMENT_CONTEXTS_URLS} or {REACT_APP_DEPLOYMENT_CONTEXTS_URLS} for DeploymentContexts,
      *   3. The configurations from the configuration argument, if provided.
      *
      * @param providersConfigs providers configuration(s) to load.
