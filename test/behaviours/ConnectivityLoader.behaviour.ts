@@ -46,27 +46,34 @@ export function behavesLikeConnectivityLoader(loader: ConnectivityLoader) {
                 });
             });
         });
-        // describe('loadEnvironment(), deployment context configuration only', function () {
-        //     context('no argument (default provider)', function () {
-        //         it('loads the default configuration properly', async function () {
-        //             const environment = await loader.loadEnvironment();
-        //             isEqual(environment.providerConfig, defaultProviderConf).should.be.true;
-        //         });
-        //     });
-        //     context('from object', function () {
-        //         it('loads the configuration properly', async function () {
-        //             const argument: ProviderConfig = localProviderConf1;
-        //             const environment = await loader.loadEnvironment(argument);
-        //             isEqual(environment.providerConfig, localProviderConf1).should.be.true;
-        //         });
-        //     });
-        //     context('from url', function () {
-        //         it('loads the configuration properly', async function () {
-        //             const argument: ProviderConfig = localProviderConf1;
-        //             const environment = await loader.loadEnvironment('http://localhost:9999/1337.localhost/Provider.json');
-        //             isEqual(environment.providerConfig, localProviderConf1).should.be.true;
-        //         });
-        //     });
-        // });
+        describe('loadEnvironment(), providers configuration only', function () {
+            context('no argument (default provider)', function () {
+                it('loads the default configuration properly', async function () {
+                    const environment = await loader.loadEnvironment();
+                    isEqual(environment.providerConfig, defaultProviderConf).should.be.true;
+                });
+            });
+            context('from object', function () {
+                it('loads the configuration properly', async function () {
+                    const argument: ProviderConfig = localProviderConf1;
+                    const environment = await loader.loadEnvironment(argument);
+                    isEqual(environment.providerConfig, localProviderConf1).should.be.true;
+                });
+            });
+            context('from url', function () {
+                it('loads the configuration properly', async function () {
+                    const argument: ProviderConfig = localProviderConf1;
+                    const environment = await loader.loadEnvironment('http://localhost:9999/1337.localhost/Provider.json');
+                    isEqual(environment.providerConfig, localProviderConf1).should.be.true;
+                });
+            });
+            context('no argument (PROVIDER_URL env variable)', function () {
+                it('loads the default configuration properly', async function () {
+                    process.env.PROVIDER_URL = 'http://localhost:9999/1337.localhost/Provider.json'
+                    const environment = await loader.loadEnvironment();
+                    isEqual(environment.providerConfig, localProviderConf1).should.be.true;
+                });
+            });
+        });
     });
 }
