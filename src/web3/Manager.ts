@@ -96,11 +96,7 @@ export default class Web3Manager implements ConnectivityManager {
      * @param web3 Web3 instance to use for the contract creation. If not defined, will retrieve an instance from a managed environment.
      * @return promise for the created contract instance.
      */
-    async getContract(
-        contractName: string,
-        providerName?: string,
-        web3?: Web3
-    ): Promise<Contract> {
+    async getContract(contractName: string, providerName?: string, web3?: Web3): Promise<Contract> {
         const environment = await this.getEnvironment(providerName);
         return environment.getContract(contractName, web3);
     }
@@ -112,7 +108,7 @@ export default class Web3Manager implements ConnectivityManager {
     async shutdown(): Promise<void> {
         await this._cachedEnvironmentsMutex.acquire();
         for (const [provider, environment] of Object.entries(this.cachedEnvironments)) {
-            console.log(`Shutting down environment '${provider}'...`);
+            console.debug(`Shutting down environment '${provider}'...`);
             await environment.shutdown();
         }
         this.cachedEnvironments = {};

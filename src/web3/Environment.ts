@@ -29,8 +29,8 @@ export default class Web3Environment implements ConnectivityEnvironment {
         public readonly deploymentContextConfig: DeploymentContextConfig
     ) {
         console.debug(
-            `Web3Environment for '${this.providerConfig.name}' created.`,
-            `Supported contracts: ${Object.keys(this.deploymentContextConfig.contracts).join(', ')}`
+            `Web3Environment for '${providerConfig.name}' created.`,
+            `Supported contracts: ${Object.keys(deploymentContextConfig.contracts).join(', ')}`
         );
     }
 
