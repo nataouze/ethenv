@@ -211,7 +211,6 @@ export default class Web3Loader implements ConnectivityLoader {
     private async _buildNetworkDeploymentsConfig(
         configs: LoadableDeploymentContextsItem[]
     ): Promise<MultiDeploymentContextsConfig> {
-        console.log(configs);
         const configurations = await Promise.all<MultiDeploymentContextsConfig>(
             configs.map(
                 (configItem: LoadableDeploymentContextsItem): Promise<MultiDeploymentContextsConfig> => {

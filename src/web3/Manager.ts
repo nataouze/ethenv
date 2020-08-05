@@ -64,7 +64,6 @@ export default class Web3Manager implements ConnectivityManager {
      */
     async getEnvironment(providerName?: string): Promise<Web3Environment> {
         providerName = providerName || process.env.DEFAULT_PROVIDER || this.providersConfig.defaultProvider;
-        console.log(providerName);
         return this._getCachedEnvironment(providerName);
     }
 
@@ -109,7 +108,7 @@ export default class Web3Manager implements ConnectivityManager {
     async shutdown(): Promise<void> {
         await this._cachedEnvironmentsMutex.acquire();
         for (const [provider, environment] of Object.entries(this.cachedEnvironments)) {
-            console.log(`Shutting down environment '${provider}'...`);
+            console.debug(`Shutting down environment '${provider}'...`);
             await environment.shutdown();
         }
         this.cachedEnvironments = {};
