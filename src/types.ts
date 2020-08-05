@@ -5,7 +5,8 @@ export type DeploymentContextConfig = Export;
 export type MultiDeploymentContextsConfig = MultiExport;
 
 export interface ProviderConfig {
-    name: string; // format 'chainId.contextName'
+    chainId: string;
+    name: string;
     url: string; // http or ws(s) connection endpoint
     options?: any; // wrapped provider constructor options
     contracts?: {

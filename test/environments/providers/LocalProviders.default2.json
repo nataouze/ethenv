@@ -1,0 +1,15 @@
+{
+    "defaultProvider": "1337.localhost_2",
+    "1337": {
+        "localhost": {
+            "chainId": "1337",
+            "name": "localhost",
+            "url": "http://localhost:7545"
+        },
+        "localhost_2": {
+            "chainId": "1337",
+            "name": "localhost_2",
+            "url": "http://localhost:9545"
+        }
+    }
+}

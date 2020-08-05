@@ -16,14 +16,14 @@ import Web3Manager from './Manager';
 
 import merge from 'lodash.merge';
 
+import DefaultProviderConfig from '../configs/Provider.default.json';
+import DefaultDeploymentContextConfig from '../configs/DeploymentContext.default.json';
+
 /**
  * Web3 implementation of ConnectivityLoader.
  */
 export default class Web3Loader implements ConnectivityLoader {
-    private readonly _defaultProviderConfig: ProviderConfig = {
-        name: '1337.localhost',
-        url: 'http://localhost:7545',
-    };
+    private readonly _defaultProviderConfig: ProviderConfig = DefaultProviderConfig;
 
     // This default providers configuration will be included in the final configuration, but can be overriden.
     private readonly _defaultProvidersConfig: MultiProvidersConfig = {
@@ -35,11 +35,7 @@ export default class Web3Loader implements ConnectivityLoader {
         },
     };
 
-    private readonly _defaultDeploymentContextConfig: DeploymentContextConfig = {
-        chainId: '1337',
-        name: 'localhost',
-        contracts: {},
-    };
+    private readonly _defaultDeploymentContextConfig: DeploymentContextConfig = DefaultDeploymentContextConfig;
 
     // This default deployments configuration will be included in the final configuration, but can be overriden.
     private readonly _defaultDeploymentContextsConfig: MultiDeploymentContextsConfig = {
@@ -73,13 +69,17 @@ export default class Web3Loader implements ConnectivityLoader {
         if (process.env.PROVIDER_URL) {
             providerToLoad.push(process.env.PROVIDER_URL);
         }
-        providerToLoad.push(providerConfig);
+        if (providerConfig) {
+            providerToLoad.push(providerConfig);
+        }
 
         const deploymentContextToLoad: LoadableDeploymentContextsItem[] = [this._defaultDeploymentContextConfig];
         if (process.env.DEPLOYMENT_CONTEXT_URL) {
             deploymentContextToLoad.push(process.env.DEPLOYMENT_CONTEXT_URL);
         }
-        deploymentContextToLoad.push(deploymentContextConfig);
+        if (deploymentContextConfig) {
+            deploymentContextToLoad.push(deploymentContextConfig);
+        }
 
         console.debug('Loading environment configurations...');
         const [providersConfig, deploymentContextsConfig] = await Promise.all([
@@ -149,14 +149,13 @@ export default class Web3Loader implements ConnectivityLoader {
     }
 
     private _convertToMultiProviders(providerConfig: ProviderConfig, makeDefault: boolean): MultiProvidersConfig {
-        const [chainId, contextName] = providerConfig.name.split('.');
         const providers = {};
-        providers[chainId] = {};
-        providers[contextName] = providerConfig;
+        providers[providerConfig.chainId] = {};
+        providers[providerConfig.chainId][providerConfig.name] = providerConfig;
 
         const converted: MultiProvidersConfig = { providers };
         if (makeDefault) {
-            converted.defaultProvider = providerConfig.name;
+            converted.defaultProvider = `${providerConfig.chainId}.${providerConfig.name}`;
         }
         return converted;
     }
@@ -212,6 +211,7 @@ export default class Web3Loader implements ConnectivityLoader {
     private async _buildNetworkDeploymentsConfig(
         configs: LoadableDeploymentContextsItem[]
     ): Promise<MultiDeploymentContextsConfig> {
+        console.log(configs);
         const configurations = await Promise.all<MultiDeploymentContextsConfig>(
             configs.map(
                 (configItem: LoadableDeploymentContextsItem): Promise<MultiDeploymentContextsConfig> => {

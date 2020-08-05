@@ -64,6 +64,7 @@ export default class Web3Manager implements ConnectivityManager {
      */
     async getEnvironment(providerName?: string): Promise<Web3Environment> {
         providerName = providerName || process.env.DEFAULT_PROVIDER || this.providersConfig.defaultProvider;
+        console.log(providerName);
         return this._getCachedEnvironment(providerName);
     }
 
@@ -96,11 +97,7 @@ export default class Web3Manager implements ConnectivityManager {
      * @param web3 Web3 instance to use for the contract creation. If not defined, will retrieve an instance from a managed environment.
      * @return promise for the created contract instance.
      */
-    async getContract(
-        contractName: string,
-        providerName?: string,
-        web3?: Web3
-    ): Promise<Contract> {
+    async getContract(contractName: string, providerName?: string, web3?: Web3): Promise<Contract> {
         const environment = await this.getEnvironment(providerName);
         return environment.getContract(contractName, web3);
     }
