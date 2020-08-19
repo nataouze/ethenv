@@ -7,13 +7,13 @@
 export interface DeploymentContextConfig {
     chainId: string;
     name: string;
-    accounts?: { [accountName: string]: string },
+    accounts?: { [accountName: string]: string };
     contracts?: {
         [contractName: string]: {
             address: string;
             abi: any[] | string;
-        }
-    },
+        };
+    };
 }
 
 export interface MultiDeploymentContextsConfig {
