@@ -1,6 +1,6 @@
 {
     "name": "ethenv",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Cross-connectivity environment for javascript Ethereum clients.",
     "main": "dist/index.js",
     "repository": "git@github.com:nataouze/ethenv.git",
@@ -33,10 +33,6 @@
         "@types/lodash.isequal": "^4.5.5",
         "@types/lodash.merge": "^4.6.6",
         "@types/mocha": "^8.0.0",
-        "web3-core": "=1.0.0-beta.55",
-        "web3-eth-contract": "=1.0.0-beta.55",
-        "web3-providers": "=1.0.0-beta.55",
-        "web3-utils": "=1.0.0-beta.55",
         "buidler-deploy": "^0.5.4",
         "chai": "^4.2.0",
         "chai-as-promised": "^7.1.1",
@@ -52,6 +48,10 @@
         "tslint-config-prettier": "^1.18.0",
         "tslint-plugin-prettier": "^2.3.0",
         "typedoc": "^0.17.8",
-        "typescript": "^3.9.7"
+        "typescript": "^3.9.7",
+        "web3-core": "=1.0.0-beta.55",
+        "web3-eth-contract": "=1.0.0-beta.55",
+        "web3-providers": "=1.0.0-beta.55",
+        "web3-utils": "=1.0.0-beta.55"
     }
 }
