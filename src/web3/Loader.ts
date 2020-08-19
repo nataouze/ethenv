@@ -75,7 +75,9 @@ export default class Web3Loader implements ConnectivityLoader {
 
         const deploymentContextToLoad: LoadableDeploymentContextsItem[] = [this._defaultDeploymentContextConfig];
         if (process.env.DEPLOYMENT_CONTEXT_URL || process.env.REACT_APP_DEPLOYMENT_CONTEXT_URL) {
-            deploymentContextToLoad.push(process.env.DEPLOYMENT_CONTEXT_URL || process.env.REACT_APP_DEPLOYMENT_CONTEXT_URL);
+            deploymentContextToLoad.push(
+                process.env.DEPLOYMENT_CONTEXT_URL || process.env.REACT_APP_DEPLOYMENT_CONTEXT_URL
+            );
         }
         if (deploymentContextConfig) {
             deploymentContextToLoad.push(deploymentContextConfig);
@@ -127,7 +129,9 @@ export default class Web3Loader implements ConnectivityLoader {
 
         const deploymentContextsToLoad: LoadableDeploymentContextsItem[] = [this._defaultDeploymentContextsConfig];
         if (process.env.DEPLOYMENT_CONTEXTS_URLS || process.env.REACT_APP_DEPLOYMENT_CONTEXTS_URLS) {
-            deploymentContextsToLoad.push(...(process.env.DEPLOYMENT_CONTEXTS_URLS || process.env.REACT_APP_DEPLOYMENT_CONTEXTS_URLS).split(' '));
+            deploymentContextsToLoad.push(
+                ...(process.env.DEPLOYMENT_CONTEXTS_URLS || process.env.REACT_APP_DEPLOYMENT_CONTEXTS_URLS).split(' ')
+            );
         }
         if (Array.isArray(deploymentContextsConfigs)) {
             deploymentContextsToLoad.push(...deploymentContextsConfigs);

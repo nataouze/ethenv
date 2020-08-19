@@ -95,6 +95,10 @@ export default class Web3Environment implements ConnectivityEnvironment {
         }
 
         const contract = this.deploymentContextConfig.contracts[contractName];
+        if (typeof contract.abi == 'string') {
+            const abi: any[] = require(`../../abis/${contract.abi}`);
+            contract.abi = abi;
+        }
         return new web3.eth.Contract(contract.abi, contract.address);
     }
 

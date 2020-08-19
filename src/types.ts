@@ -1,8 +1,24 @@
 // tslint:disable-next-line no-implicit-dependencies
-import { Export, MultiExport } from '@nomiclabs/buidler/types';
+// import { Export, MultiExport } from '@nomiclabs/buidler/types';
 
-export type DeploymentContextConfig = Export;
-export type MultiDeploymentContextsConfig = MultiExport;
+// export type DeploymentContextConfig = Export;
+// export type MultiDeploymentContextsConfig = MultiExport;
+
+export interface DeploymentContextConfig {
+    chainId: string;
+    name: string;
+    accounts?: { [accountName: string]: string },
+    contracts?: {
+        [contractName: string]: {
+            address: string;
+            abi: any[] | string;
+        }
+    },
+}
+
+export interface MultiDeploymentContextsConfig {
+    [chaindId: string]: { [network: string]: DeploymentContextConfig };
+}
 
 export interface ProviderConfig {
     chainId: string;
@@ -20,7 +36,7 @@ export interface ProviderConfig {
 
 export interface MultiProvidersConfig {
     defaultProvider?: string; // format: 'chainId.contextName'
-    providers: { [chaindId: string]: { [context: string]: ProviderConfig } };
+    providers: { [chaindId: string]: { [network: string]: ProviderConfig } };
 }
 
 export interface ConnectivityEnvironment {

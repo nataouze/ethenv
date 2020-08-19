@@ -1,5 +1,5 @@
 import isEqual from 'lodash.isequal';
-import { ConnectivityLoader, ProviderConfig, MultiProvidersConfig } from '../../src/types'
+import { ConnectivityLoader, ProviderConfig, MultiProvidersConfig } from '../../src/types';
 
 import defaultProviderConf = require('../environments/1337.localhost/Provider.json');
 import localProviderConf1 = require('../environments/1337.localhost/Provider.json');
@@ -11,7 +11,6 @@ import localMultiProviders2Conf = require('../environments/providers/LocalProvid
 import { createLocalFileServer } from '../static.server';
 
 export function behavesLikeConnectivityLoader(loader: ConnectivityLoader) {
-
     describe('Like a ConnectivityLoader', function () {
         before(function () {
             createLocalFileServer('test/environments');
@@ -34,13 +33,15 @@ export function behavesLikeConnectivityLoader(loader: ConnectivityLoader) {
             context('from url', function () {
                 it('loads the configuration properly', async function () {
                     const argument: ProviderConfig = localProviderConf1;
-                    const environment = await loader.loadEnvironment('http://localhost:9999/1337.localhost/Provider.json');
+                    const environment = await loader.loadEnvironment(
+                        'http://localhost:9999/1337.localhost/Provider.json'
+                    );
                     isEqual(environment.providerConfig, localProviderConf1).should.be.true;
                 });
             });
             context('no argument (PROVIDER_URL env variable)', function () {
                 it('loads the default configuration properly', async function () {
-                    process.env.PROVIDER_URL = 'http://localhost:9999/1337.localhost/Provider.json'
+                    process.env.PROVIDER_URL = 'http://localhost:9999/1337.localhost/Provider.json';
                     const environment = await loader.loadEnvironment();
                     isEqual(environment.providerConfig, localProviderConf1).should.be.true;
                 });
@@ -63,13 +64,15 @@ export function behavesLikeConnectivityLoader(loader: ConnectivityLoader) {
             context('from url', function () {
                 it('loads the configuration properly', async function () {
                     const argument: ProviderConfig = localProviderConf1;
-                    const environment = await loader.loadEnvironment('http://localhost:9999/1337.localhost/Provider.json');
+                    const environment = await loader.loadEnvironment(
+                        'http://localhost:9999/1337.localhost/Provider.json'
+                    );
                     isEqual(environment.providerConfig, localProviderConf1).should.be.true;
                 });
             });
             context('no argument (PROVIDER_URL env variable)', function () {
                 it('loads the default configuration properly', async function () {
-                    process.env.PROVIDER_URL = 'http://localhost:9999/1337.localhost/Provider.json'
+                    process.env.PROVIDER_URL = 'http://localhost:9999/1337.localhost/Provider.json';
                     const environment = await loader.loadEnvironment();
                     isEqual(environment.providerConfig, localProviderConf1).should.be.true;
                 });
