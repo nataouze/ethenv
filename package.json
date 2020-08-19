@@ -21,11 +21,7 @@
     "dependencies": {
         "async-mutex": "^0.2.4",
         "lodash.merge": "^4.6.2",
-        "web3": "=1.0.0-beta.55",
-        "web3-core": "=1.0.0-beta.55",
-        "web3-eth-contract": "=1.0.0-beta.55",
-        "web3-providers": "=1.0.0-beta.55",
-        "web3-utils": "=1.0.0-beta.55"
+        "web3": "=1.0.0-beta.55"
     },
     "optionalDependencies": {
         "cross-fetch": "^3.0.5"
@@ -37,6 +33,10 @@
         "@types/lodash.isequal": "^4.5.5",
         "@types/lodash.merge": "^4.6.6",
         "@types/mocha": "^8.0.0",
+        "web3-core": "=1.0.0-beta.55",
+        "web3-eth-contract": "=1.0.0-beta.55",
+        "web3-providers": "=1.0.0-beta.55",
+        "web3-utils": "=1.0.0-beta.55",
         "buidler-deploy": "^0.5.4",
         "chai": "^4.2.0",
         "chai-as-promised": "^7.1.1",

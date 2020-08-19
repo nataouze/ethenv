@@ -5,6 +5,6 @@ lib/
 build/
 docs/
 
-src/test.ts
+/src/test.ts
 
 .DS_Store
