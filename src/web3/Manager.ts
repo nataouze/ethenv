@@ -11,11 +11,12 @@ import {
 } from '../types';
 import Web3Environment, { Provider } from './Environment';
 import Web3Loader from './Loader';
+import Logger from '../libs/Logger';
 
 /**
  * Web3 implementation of ConnectivityManager.
  */
-export default class Web3Manager implements ConnectivityManager {
+export default class Web3Manager extends Logger implements ConnectivityManager {
     public cachedEnvironments: { [providerName: string]: Web3Environment } = {};
 
     private _cachedEnvironmentsMutex = new Mutex();
@@ -29,7 +30,8 @@ export default class Web3Manager implements ConnectivityManager {
         public readonly providersConfig: MultiProvidersConfig,
         public readonly deploymentContextsConfig: MultiDeploymentContextsConfig
     ) {
-        console.debug(`Web3Manager for environments ${Object.keys(this.providersConfig.providers).join(', ')} created`);
+        super();
+        this.log(`Web3Manager for environments ${Object.keys(this.providersConfig.providers).join(', ')} created`);
     }
 
     /**
@@ -108,24 +110,24 @@ export default class Web3Manager implements ConnectivityManager {
     async shutdown(): Promise<void> {
         await this._cachedEnvironmentsMutex.acquire();
         for (const [provider, environment] of Object.entries(this.cachedEnvironments)) {
-            console.debug(`Shutting down environment '${provider}'...`);
+            this.log(`Shutting down environment '${provider}'...`);
             await environment.shutdown();
         }
         this.cachedEnvironments = {};
         await this._cachedEnvironmentsMutex.release();
-        console.debug('All cached environments have been shutdown.');
+        this.log('All cached environments have been shutdown.');
     }
 
     private async _getCachedEnvironment(providerName: string): Promise<Web3Environment> {
         await this._cachedEnvironmentsMutex.acquire();
         if (this.cachedEnvironments[providerName] === undefined) {
             const [chainId, contextName] = providerName.split('.');
-            console.debug(this.providersConfig);
+            this.log(this.providersConfig);
             this.cachedEnvironments[providerName] = new Web3Environment(
                 this.providersConfig.providers[chainId][contextName],
                 this.deploymentContextsConfig[chainId][contextName]
             );
-            console.debug(`New environment cached with key '${providerName}'`);
+            this.log(`New environment cached with key '${providerName}'`);
         }
         await this._cachedEnvironmentsMutex.release();
         return this.cachedEnvironments[providerName];

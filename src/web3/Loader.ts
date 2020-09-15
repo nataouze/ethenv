@@ -13,6 +13,7 @@ import {
 } from '../types';
 import Web3Environment from './Environment';
 import Web3Manager from './Manager';
+import Logger from '../libs/Logger';
 
 import merge from 'lodash.merge';
 
@@ -22,7 +23,7 @@ import DefaultDeploymentContextConfig from '../configs/DeploymentContext.default
 /**
  * Web3 implementation of ConnectivityLoader.
  */
-export default class Web3Loader implements ConnectivityLoader {
+export default class Web3Loader extends Logger implements ConnectivityLoader {
     private readonly _defaultProviderConfig: ProviderConfig = DefaultProviderConfig;
 
     // This default providers configuration will be included in the final configuration, but can be overriden.
@@ -43,6 +44,10 @@ export default class Web3Loader implements ConnectivityLoader {
             localhost: this._defaultDeploymentContextConfig,
         },
     };
+
+    constructor() {
+        super();
+    }
 
     /**
      * Load the configurations and create a new connectivity environment.
@@ -83,14 +88,14 @@ export default class Web3Loader implements ConnectivityLoader {
             deploymentContextToLoad.push(deploymentContextConfig);
         }
 
-        console.debug('Loading environment configurations...');
+        this.log('Loading environment configurations...');
         const [providersConfig, deploymentContextsConfig] = await Promise.all([
             this._buildProvidersConfig(providerToLoad, true),
             this._buildNetworkDeploymentsConfig(deploymentContextToLoad),
         ]);
-        console.debug('Environment configurations loaded');
-        console.debug('Provider configuration:', JSON.stringify(providersConfig));
-        console.debug('Deployment context configuration:', JSON.stringify(deploymentContextsConfig));
+        // this.log('Environment configurations loaded');
+        // this.log('Provider configuration:', JSON.stringify(providersConfig));
+        // this.log('Deployment context configuration:', JSON.stringify(deploymentContextsConfig));
 
         const manager = new Web3Manager(providersConfig, deploymentContextsConfig);
         return manager.getEnvironment();
@@ -139,14 +144,14 @@ export default class Web3Loader implements ConnectivityLoader {
             deploymentContextsToLoad.push(deploymentContextsConfigs);
         }
 
-        console.debug('Loading environments configurations...');
+        this.log('Loading environments configurations...');
         const [providersConfig, deploymentContextsConfig] = await Promise.all([
             this._buildProvidersConfig(providersToLoad, false),
             this._buildNetworkDeploymentsConfig(deploymentContextsToLoad),
         ]);
-        console.debug('Environments configurations loaded');
-        console.debug('Providers configuration:', JSON.stringify(providersConfig));
-        console.debug('Deployment contexts configuration:', JSON.stringify(deploymentContextsConfig));
+        // this.log('Environments configurations loaded');
+        // this.log('Providers configuration:', JSON.stringify(providersConfig));
+        // this.log('Deployment contexts configuration:', JSON.stringify(deploymentContextsConfig));
 
         const manager = new Web3Manager(providersConfig, deploymentContextsConfig);
         return manager;
@@ -172,7 +177,7 @@ export default class Web3Loader implements ConnectivityLoader {
             configs.map(
                 (configItem: LoadableProvidersItem): Promise<MultiProvidersConfig> => {
                     if (typeof configItem === 'string') {
-                        console.log(`fetching ${configItem}`);
+                        this.log(`fetching ${configItem}`);
                         return fetch(configItem)
                             .then((response: Response) => response.json())
                             .then((json: any) => {
@@ -219,7 +224,7 @@ export default class Web3Loader implements ConnectivityLoader {
             configs.map(
                 (configItem: LoadableDeploymentContextsItem): Promise<MultiDeploymentContextsConfig> => {
                     if (typeof configItem === 'string') {
-                        console.log(`fetching ${typeof configItem} config from ${configItem}`);
+                        this.log(`fetching ${typeof configItem} config from ${configItem}`);
                         return fetch(configItem as string)
                             .then((response: Response) => response.json())
                             .then((json: any) => {

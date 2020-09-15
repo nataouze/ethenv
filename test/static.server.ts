@@ -4,7 +4,6 @@ import path from 'path';
 
 export function createLocalFileServer(folderPath = './') {
     http.createServer(function(req, res) {
-        console.log('req');
         var stream = createReadStream(path.join(folderPath, req.url));
         stream.on('error', function() {
             res.writeHead(404);
