@@ -115,7 +115,7 @@ export default class Web3Environment implements ConnectivityEnvironment {
         for (const [url, provider] of Object.entries(this.cachedProviders)) {
             try {
                 console.debug(`Disconnecting provider for ${url} ...`);
-                
+
                 if (provider instanceof Http) {
                     provider.disconnect(null, null);
                 } else if (provider instanceof Websocket) {
@@ -137,10 +137,9 @@ export default class Web3Environment implements ConnectivityEnvironment {
     private async _getCachedProvider(url: string, options: {}): Promise<Provider> {
         await this._providersCacheMutex.acquire();
         if (this.cachedProviders[url] === undefined) {
-            if (url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1) {            
+            if (url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1) {
                 this.cachedProviders[url] = new Http(url, options) as Provider;
-            }
-            else if (url.indexOf('ws://') !== -1) {
+            } else if (url.indexOf('ws://') !== -1) {
                 this.cachedProviders[url] = new Websocket(url, options) as Provider;
             }
             console.debug(`New provider cached with key '${url}'`);
@@ -149,7 +148,6 @@ export default class Web3Environment implements ConnectivityEnvironment {
         return this.cachedProviders[url];
     }
 
-        
     private async _getCachedWrappedProvider(url: string, options?: {}): Promise<Web3> {
         const key = `${url}.${JSON.stringify(options)}`;
         await this._wrappedProvidersCacheMutex.acquire();
