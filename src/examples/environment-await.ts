@@ -25,16 +25,12 @@ const myAddress = '0xabcabc';
         // Creates the default provider and wraps a Web3 instance with the default options
         const web3 = await environment.getWeb3();
         // Reuses the default provider and wraps a new Web3 instance with the supplied options
-        const beforeTestWeb3 = await environment.getWeb3({
-            defaultBlock: 255
-        });
+        const beforeTestWeb3 = await environment.getWeb3();
         // Reuses the default provider and wraps a new Web3 instance with the supplied options
-        const afterTestWeb3 = await environment.getWeb3({
-            defaultBlock: 298
-        });
+        const afterTestWeb3 = await environment.getWeb3();
         const [balanceBeforeTest, balanceAfterTest, currentBalance] = await Promise.all([
-            beforeTestWeb3.eth.getBalance(myAddress),
-            afterTestWeb3.eth.getBalance(myAddress),
+            beforeTestWeb3.eth.getBalance(myAddress, 255),
+            afterTestWeb3.eth.getBalance(myAddress, 298),
             web3.eth.getBalance(myAddress),
         ]);
         console.log('balances', balanceBeforeTest, balanceAfterTest, currentBalance);
