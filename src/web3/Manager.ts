@@ -1,5 +1,4 @@
 import Web3 from 'web3';
-import { Web3ModuleOptions } from 'web3-core';
 import { Contract } from 'web3-eth-contract';
 import { Mutex } from 'async-mutex';
 import {
@@ -73,7 +72,7 @@ export default class Web3Manager implements ConnectivityManager {
      * @param options argument for the Web3 constructor. If provided, will override the configuration value.
      * @return promise for the retrieved Web3 instance.
      */
-    async getWrappedProvider(providerName?: string, options?: Web3ModuleOptions): Promise<Web3> {
+    async getWrappedProvider(providerName?: string, options?: {}): Promise<Web3> {
         const environment = await this.getEnvironment(providerName);
         return environment.getWrappedProvider(options);
     }
@@ -84,7 +83,7 @@ export default class Web3Manager implements ConnectivityManager {
      * @param options argument for the Web3 constructor. If provided, will override the configuration value.
      * @return promise for the retrieved Web3 instance.
      */
-    async getWeb3(providerName?: string, options?: Web3ModuleOptions): Promise<Web3> {
+    async getWeb3(providerName?: string, options?: {}): Promise<Web3> {
         return this.getWrappedProvider(providerName, options);
     }
 
