@@ -1,6 +1,6 @@
 {
     "name": "ethenv",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Cross-connectivity environment for javascript Ethereum clients.",
     "main": "dist/index.js",
     "repository": "git@github.com:nataouze/ethenv.git",
