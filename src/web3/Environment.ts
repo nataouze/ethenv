@@ -113,6 +113,7 @@ export default class Web3Environment implements ConnectivityEnvironment {
 
         //Provider Cache
         const providerLockRelease = await this._providersCacheMutex.acquire();
+        const wrappedProviderLockRelease = await this._wrappedProvidersCacheMutex.acquire();
         for (const [url, provider] of Object.entries(this.cachedProviders)) {
             try {
                 console.debug(`Disconnecting provider for ${url} ...`);
@@ -129,11 +130,8 @@ export default class Web3Environment implements ConnectivityEnvironment {
             }
         }
         this.cachedProviders = {};
-        providerLockRelease();
-
-        //Wrapped Provider Cache
-        const wrappedProviderLockRelease = await this._wrappedProvidersCacheMutex.acquire();        
         this.cachedWrappedProviders = {};
+        providerLockRelease();
         wrappedProviderLockRelease();
         console.debug(`Environment ${this.providerConfig.name} disconnected`);
     }
@@ -141,16 +139,21 @@ export default class Web3Environment implements ConnectivityEnvironment {
     private async _getCachedProvider(url: string, options: {}): Promise<Provider> {
         if (this.cachedProviders[url] === undefined) {
             const providerLockRelease = await this._providersCacheMutex.acquire();
-            if (this.cachedProviders[url] === undefined) {
-                if (url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1) {            
-                    this.cachedProviders[url] = new Http(url, options) as Provider;
+            try {
+                if (this.cachedProviders[url] === undefined) {
+                    if (url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1) {            
+                        this.cachedProviders[url] = new Http(url, options) as Provider;
+                    }
+                    else if (url.indexOf('ws://') !== -1) {
+                        this.cachedProviders[url] = new Websocket(url, options) as Provider;
+                    }
+                    console.debug(`New provider cached with key '${url}'`);
                 }
-                else if (url.indexOf('ws://') !== -1) {
-                    this.cachedProviders[url] = new Websocket(url, options) as Provider;
-                }
-                console.debug(`New provider cached with key '${url}'`);
+            } catch(e) {
+                console.error(e);
+            } finally {
+                providerLockRelease();
             }
-            providerLockRelease();
         }
         return this.cachedProviders[url];
     }
@@ -159,12 +162,17 @@ export default class Web3Environment implements ConnectivityEnvironment {
         const key = `${url}.${JSON.stringify(options)}`;
         if (this.cachedWrappedProviders[key] === undefined) {
             const wrappedProviderRelease = await this._wrappedProvidersCacheMutex.acquire();
-            if (this.cachedWrappedProviders[key] === undefined) {
-                const provider = await this._getCachedProvider(url, options);
-                this.cachedWrappedProviders[key] = new Web3(provider);
-                console.debug(`New Web3 cached with key '${key}'`);
+            try {
+                if (this.cachedWrappedProviders[key] === undefined) {
+                    const provider = await this._getCachedProvider(url, options);
+                    this.cachedWrappedProviders[key] = new Web3(provider);
+                    console.debug(`New Web3 cached with key '${key}'`);
+                }
+            } catch(e) {
+                console.error(e);
+            } finally {
+                wrappedProviderRelease();
             }
-            wrappedProviderRelease();
         }
         return this.cachedWrappedProviders[key];
     }
