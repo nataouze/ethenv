@@ -111,7 +111,7 @@ export default class Web3Environment implements ConnectivityEnvironment {
     async shutdown(): Promise<void> {
         console.debug(`Disconnecting environment ${this.providerConfig.name} ...`);
 
-        //Provider Cache
+        // Provider Cache
         const providerLockRelease = await this._providersCacheMutex.acquire();
         const wrappedProviderLockRelease = await this._wrappedProvidersCacheMutex.acquire();
         for (const [url, provider] of Object.entries(this.cachedProviders)) {
@@ -141,15 +141,14 @@ export default class Web3Environment implements ConnectivityEnvironment {
             const providerLockRelease = await this._providersCacheMutex.acquire();
             try {
                 if (this.cachedProviders[url] === undefined) {
-                    if (url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1) {            
+                    if (url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1) {
                         this.cachedProviders[url] = new Http(url, options) as Provider;
-                    }
-                    else if (url.indexOf('ws://') !== -1) {
+                    } else if (url.indexOf('ws://') !== -1) {
                         this.cachedProviders[url] = new Websocket(url, options) as Provider;
                     }
                     console.debug(`New provider cached with key '${url}'`);
                 }
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
             } finally {
                 providerLockRelease();
@@ -168,7 +167,7 @@ export default class Web3Environment implements ConnectivityEnvironment {
                     this.cachedWrappedProviders[key] = new Web3(provider);
                     console.debug(`New Web3 cached with key '${key}'`);
                 }
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
             } finally {
                 wrappedProviderRelease();
