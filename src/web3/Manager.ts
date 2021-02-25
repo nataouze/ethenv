@@ -105,28 +105,30 @@ export default class Web3Manager implements ConnectivityManager {
      * @return promise fafter shutdowns.
      */
     async shutdown(): Promise<void> {
-        await this._cachedEnvironmentsMutex.acquire();
+        const environmentLockRelease = await this._cachedEnvironmentsMutex.acquire();
         for (const [provider, environment] of Object.entries(this.cachedEnvironments)) {
             console.debug(`Shutting down environment '${provider}'...`);
             await environment.shutdown();
         }
         this.cachedEnvironments = {};
-        await this._cachedEnvironmentsMutex.release();
+        environmentLockRelease();
         console.debug('All cached environments have been shutdown.');
     }
 
     private async _getCachedEnvironment(providerName: string): Promise<Web3Environment> {
-        await this._cachedEnvironmentsMutex.acquire();
         if (this.cachedEnvironments[providerName] === undefined) {
-            const [chainId, contextName] = providerName.split('.');
-            console.debug(this.providersConfig);
-            this.cachedEnvironments[providerName] = new Web3Environment(
-                this.providersConfig.providers[chainId][contextName],
-                this.deploymentContextsConfig[chainId][contextName]
-            );
-            console.debug(`New environment cached with key '${providerName}'`);
+            const environmentLockRelease = await this._cachedEnvironmentsMutex.acquire();
+            if (this.cachedEnvironments[providerName] === undefined) {
+                const [chainId, contextName] = providerName.split('.');
+                console.debug(this.providersConfig);
+                this.cachedEnvironments[providerName] = new Web3Environment(
+                    this.providersConfig.providers[chainId][contextName],
+                    this.deploymentContextsConfig[chainId][contextName]
+                );
+                console.debug(`New environment cached with key '${providerName}'`);
+            }
+            environmentLockRelease();
         }
-        await this._cachedEnvironmentsMutex.release();
         return this.cachedEnvironments[providerName];
     }
 }
