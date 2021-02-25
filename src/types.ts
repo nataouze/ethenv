@@ -1,5 +1,4 @@
 // tslint:disable-next-line no-implicit-dependencies
-// import { Export, MultiExport } from '@nomiclabs/buidler/types';
 
 // export type DeploymentContextConfig = Export;
 // export type MultiDeploymentContextsConfig = MultiExport;
