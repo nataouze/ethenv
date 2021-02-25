@@ -1,8 +1,3 @@
-// tslint:disable-next-line no-implicit-dependencies
-
-// export type DeploymentContextConfig = Export;
-// export type MultiDeploymentContextsConfig = MultiExport;
-
 export interface DeploymentContextConfig {
     chainId: string;
     name: string;
